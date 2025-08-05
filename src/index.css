@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Add this in a global stylesheet or specific component */
+body.disable-copy {
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
