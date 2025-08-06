@@ -1,21 +1,25 @@
-
-
-
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import { UserPlus, Eye, EyeOff } from "lucide-react";
 
-
+const maharashtraDistricts = [
+  "Ahmednagar", "Akola", "Amravati", "Aurangabad", "Beed", "Bhandara",
+  "Buldhana", "Chandrapur", "Dhule", "Gadchiroli", "Gondia", "Hingoli",
+  "Jalgaon", "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban",
+  "Nagpur", "Nanded", "Nandurbar", "Nashik", "Osmanabad", "Palghar",
+  "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg",
+  "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"
+];
 
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    f_name: "",last_name:"", email: "", whatsappNo: "", district: "",  password: "",confirmPassword: ""
+    f_name: "", last_name: "", email: "", whatsappNo: "",
+    district: "", password: "", confirmPassword: ""
   });
   const [showPassword, setShowPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -30,9 +34,10 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     try {
       if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
+        setError("Passwords do not match");
+        return;
       }
+
       await api.post("/users/send-otp", {
         whatsappNo: formData.whatsappNo,
       });
@@ -60,7 +65,6 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             {error}
           </div>
         )}
-
         {success && (
           <div className="bg-green-100 text-green-700 text-sm rounded px-4 py-2 mb-3 text-center">
             {success}
@@ -73,11 +77,11 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             name="f_name"
             value={formData.f_name}
             onChange={handleChange}
-            placeholder="Fisrt Name"
+            placeholder="First Name"
             required
             className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-           <input
+          <input
             type="text"
             name="last_name"
             value={formData.last_name}
@@ -86,7 +90,6 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             required
             className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-
           <input
             type="email"
             name="email"
@@ -96,7 +99,6 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             required
             className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
           />
-
           <input
             type="text"
             name="whatsappNo"
@@ -107,46 +109,21 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
           />
 
-          {/* <input
-            type="text"
-            name="taluka"
-            value={formData.taluka}
-            onChange={handleChange}
-            placeholder="Taluka"
-            required
-            className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-          /> */}
-
-          <input
-            type="text"
+          {/* ✅ District Dropdown */}
+          <select
             name="district"
             value={formData.district}
             onChange={handleChange}
-            placeholder="District"
             required
-            className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
+            className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400 bg-white"
+          >
+            <option value="">-- Select District --</option>
+            {maharashtraDistricts.map((district) => (
+              <option key={district} value={district}>{district}</option>
+            ))}
+          </select>
 
-          {/* <input
-            type="text"
-            name="state"
-            value={formData.state}
-            onChange={handleChange}
-            placeholder="State"
-            required
-            className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-          /> */}
-
-          {/* <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-            required
-            className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-          /> */}
-
+          {/* ✅ Password */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
@@ -165,23 +142,24 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             </div>
           </div>
 
+          {/* ✅ Confirm Password */}
           <div className="relative">
-          <input
-            type={showConfirmPassword ? "text" : "password"}
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="Confirm Password"
-            required
-            className="w-full p-2 pr-10 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
-          <div
-            onClick={() => setShowConfirmPassword((prev) => !prev)}
-            className="absolute right-3 top-2.5 text-zinc-500 cursor-pointer"
-          >
-            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm Password"
+              required
+              className="w-full p-2 pr-10 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+            <div
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="absolute right-3 top-2.5 text-zinc-500 cursor-pointer"
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </div>
           </div>
-        </div>
 
           <button
             type="submit"

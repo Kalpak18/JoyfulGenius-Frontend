@@ -21,7 +21,6 @@ import PrivateUserRoute from './components/PrivateUserRoutes';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import RequireAuth from "./components/RequireAuth";
 import PaymentPage from './pages/PaymentPage';
-import Login from './pages/Login';
 import MyTests from "./pages/myTests";
 import AdminQuestions from './pages/admin/AdminQuestion';
 import UserDashboard from "./pages/UserDashboard";
@@ -36,7 +35,10 @@ import SocialStudies from "./pages/SocialStudies";
 import CourseSelection from "./pages/CourseSelection";
 import AdminUploadChapter from './pages/admin/AdminUploadChapter';
 import DynamicSubjectPage from "./pages/Dynamic Pages/DynamicSubjectPage";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
+// Inside your Routes
 
 // import AdminQuestions from './pages/admin/AdminQuestion';
 
@@ -45,7 +47,10 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/enroll" element={<Enroll />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
+
+      
       <Route path="/study-materials" element={<StudyMaterials />} />
       <Route path="/syllabus" element={<Syllabus />} />
       <Route path="/register" element={<Register />} />
