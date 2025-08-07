@@ -47,8 +47,13 @@ const Register = () => {
       setSuccess("✅ OTP sent to your mobile");
       setTimeout(() => navigate("/verify-otp"), 1000);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to send OTP");
+      if (err.response?.data?.message?.includes("already registered")) {
+        setError("This mobile number is already registered.");
+      } else {
+        setError(err.response?.data?.message || "Registration failed");
+      }
     }
+
   };
 
   return (
@@ -95,10 +100,15 @@ const Register = () => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            placeholder="Email"
-            required
+            placeholder="Email (optional)"
             className="w-full p-2 border border-zinc-300 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
           />
+          {!formData.email && (
+            <p className="text-yellow-600 text-sm mt-1">
+              You can reset your password only through mobile OTP if email is not provided.
+            </p>
+          )}
+
           <input
             type="text"
             name="whatsappNo"
