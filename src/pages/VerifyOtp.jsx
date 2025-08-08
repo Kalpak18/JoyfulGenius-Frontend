@@ -13,7 +13,7 @@ const VerifyOtp = () => {
   const [loading, setLoading] = useState(false);
 
   const userData = JSON.parse(localStorage.getItem("pendingUser"));
-  const whatsappNumber = userData?.whatsappNo || "";
+  const whatsappNo = userData?.whatsappNo || "";
 
   useEffect(() => {
     if (!userData) navigate("/register");
@@ -28,7 +28,7 @@ const VerifyOtp = () => {
       const res = await api.post("/users/verify-otp", {
         whatsappNumber,
         code: otp,
-        user: userData,
+        // user: userData,
       });
 
       localStorage.removeItem("pendingUser");
