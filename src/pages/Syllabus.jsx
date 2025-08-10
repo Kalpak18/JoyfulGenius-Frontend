@@ -54,7 +54,7 @@ const Syllabus = () => {
             For more detailed information, you can download the complete guide below:
           </p>
           <a
-            href="../src/assets/information2324.pdf"
+            href="/information2324.pdf"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             target="_blank"
             rel="noopener noreferrer"
