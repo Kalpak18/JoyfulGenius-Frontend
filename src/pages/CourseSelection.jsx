@@ -30,8 +30,8 @@ const CourseSelection = () => {
         "अंतिम परीक्षेला 130+ गुणांसाठी बक्षीस",    
       ],
       goToCourse: "कोर्सवर जा",
-      // buyNow: "आताच खरेदी करा",
-      buyNow: "आजच परीक्षेसाठी तयार व्हा!", 
+      buyNow: "6000+ प्रश्नांसाठी येथे क्लिक करा",
+      // buyNow: "आजच परीक्षेसाठी तयार व्हा!", 
     },
     en: {
       title: "Choose Your Course",
@@ -54,8 +54,8 @@ const CourseSelection = () => {
         "Prize For 130+ marks in Final Exam"  
       ],
       goToCourse: "Go to Course",
-      // buyNow: "Buy Now",
-      buyNow: "Get Exam-Ready Today!",
+      buyNow: "Unlock 6000+ Questions",
+      //buyNow: "Get Exam-Ready Today!",
     },
   };
 

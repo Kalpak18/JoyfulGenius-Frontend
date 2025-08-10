@@ -216,10 +216,212 @@
 
 // export default StudyMaterial;
 
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
+// import api from "../utils/axios";
+// import Header from "../components/Header";
+// import { Download, FileText } from "lucide-react";
+// import { formatDistanceToNow } from "date-fns";
+
+// const getEmbedUrl = (url) => {
+//   if (url.includes("youtube.com/watch")) {
+//     const videoId = new URL(url).searchParams.get("v");
+//     return `https://www.youtube.com/embed/${videoId}`;
+//   }
+//   if (url.includes("youtu.be/")) {
+//     const videoId = url.split("youtu.be/")[1];
+//     return `https://www.youtube.com/embed/${videoId}`;
+//   }
+//   if (url.includes("drive.google.com/file/d/")) {
+//     const fileId = url.match(/\/file\/d\/(.*?)\//)?.[1];
+//     return `https://drive.google.com/file/d/${fileId}/preview`;
+//   }
+//   return url;
+// };
+
+// const StudyMaterial = () => {
+//   const [materials, setMaterials] = useState([]);
+//   const [search, setSearch] = useState("");
+//   const [subjectFilter, setSubjectFilter] = useState("");
+//   const [sortOrder, setSortOrder] = useState("newest");
+//   const [showMobileFilters, setShowMobileFilters] = useState(false);
+  
+
+//   useEffect(() => {
+//      const fetchMaterials = async () => {
+//     try {
+//       const res = await api.get("/materials");
+//       setMaterials(res.data.reverse());
+//     } catch (err) {
+//       console.error("Failed to fetch materials:", err);
+//     }
+//   };
+//     fetchMaterials();
+//   }, []);
+
+ 
+
+//   const filteredMaterials = materials
+//     .filter((item) =>
+//       item.title.toLowerCase().includes(search.toLowerCase()) &&
+//       (subjectFilter ? item.subject === subjectFilter : true)
+//     )
+//     .sort((a, b) => {
+//       if (sortOrder === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+//       else return new Date(a.createdAt) - new Date(b.createdAt);
+//     });
+
+//   const uniqueSubjects = [...new Set(materials.map((m) => m.subject))];
+
+//   return (
+//     <div>
+//       <Header />
+//       <div className="p-4 max-w-6xl mx-auto">
+//         <h1 className="text-2xl font-bold mb-4 text-center text-zinc-800">Study Materials</h1>
+
+//         {/* Filter Controls */}
+//         <div className="mb-4 sm:mb-6">
+//           {/* Desktop Layout */}
+//           <div className="hidden sm:grid grid-cols-3 gap-3">
+//             <input
+//               type="text"
+//               placeholder="🔍 Search"
+//               value={search}
+//               onChange={(e) => setSearch(e.target.value)}
+//               className="p-2 border border-gray-300 rounded w-full text-sm"
+//             />
+
+//             <select
+//               className="p-2 border border-gray-300 rounded w-full text-sm"
+//               value={subjectFilter}
+//               onChange={(e) => setSubjectFilter(e.target.value)}
+//             >
+//               <option value="">📘 All Subjects</option>
+//               {uniqueSubjects.map((subj, i) => (
+//                 <option key={i} value={subj}>{subj}</option>
+//               ))}
+//             </select>
+
+//             <select
+//               className="p-2 border border-gray-300 rounded w-full text-sm"
+//               value={sortOrder}
+//               onChange={(e) => setSortOrder(e.target.value)}
+//             >
+//               <option value="newest">⏳ Newest</option>
+//               <option value="oldest">📂 Oldest</option>
+//             </select>
+//           </div>
+
+//           {/* Mobile Layout */}
+//           <div className="sm:hidden">
+//             <div className="flex justify-between items-center mb-2">
+//               <button
+//                 onClick={() => setShowMobileFilters(!showMobileFilters)}
+//                 className="flex items-center gap-1 text-sm text-green-600 border border-green-500 px-3 py-1 rounded-full"
+//               >
+//                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707l-5.586 5.586A1 1 0 0115 13v5a1 1 0 01-.553.894l-4 2A1 1 0 019 20v-7.414a1 1 0 01.293-.707L15 5.414V4H4a1 1 0 01-1-1z" />
+//                 </svg>
+//                 Filters
+//               </button>
+//             </div>
+
+//             {showMobileFilters && (
+//               <div className="space-y-2">
+//                 <input
+//                   type="text"
+//                   placeholder="🔍 Search"
+//                   value={search}
+//                   onChange={(e) => setSearch(e.target.value)}
+//                   className="p-1.5 border border-gray-300 rounded w-full text-xs"
+//                 />
+
+//                 <select
+//                   className="p-1.5 border border-gray-300 rounded w-full text-xs"
+//                   value={subjectFilter}
+//                   onChange={(e) => setSubjectFilter(e.target.value)}
+//                 >
+//                   <option value="">📘 All Subjects</option>
+//                   {uniqueSubjects.map((subj, i) => (
+//                     <option key={i} value={subj}>{subj}</option>
+//                   ))}
+//                 </select>
+
+//                 <select
+//                   className="p-1.5 border border-gray-300 rounded w-full text-xs"
+//                   value={sortOrder}
+//                   onChange={(e) => setSortOrder(e.target.value)}
+//                 >
+//                   <option value="newest">⏳ Newest</option>
+//                   <option value="oldest">📂 Oldest</option>
+//                 </select>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+
+//         {/* Materials Grid */}
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+//           {filteredMaterials.map((item) => (
+//           <div
+//             key={item._id}
+//             className="border border-zinc-200 p-4 rounded shadow-sm bg-white hover:shadow-md transition"
+//           >
+//             <h2 className="text-lg font-semibold text-zinc-800 mb-1">{item.title}</h2>
+//             <p className="text-sm text-zinc-500 mb-2">Subject: <span className="font-medium text-zinc-700">{item.subject}</span></p>
+//             <p className="text-xs text-zinc-400 mb-3">Uploaded {formatDistanceToNow(new Date(item.createdAt))} ago</p>
+
+//             {item.type === "video" ? (
+//               <div className="aspect-w-16 aspect-h-9 mb-2">
+//                 <iframe
+//                   src={getEmbedUrl(item.url)}
+//                   title={item.title}
+//                   allowFullScreen
+//                   className="w-full h-48 rounded"
+//                 ></iframe>
+//               </div>
+//             ) : (
+//               <div className="mb-3">
+//                 <div className="aspect-w-16 aspect-h-9 border rounded overflow-hidden mb-2">
+//                   <iframe
+//                     src={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+//                     className="w-full h-48"
+//                     title={item.title}
+//                   />
+//                 </div>
+//                 <a
+//                   href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+//                   target="_blank"
+//                   rel="noopener noreferrer"
+//                   className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
+//                 >
+//                   <FileText size={18} /> View Full PDF
+//                 </a>
+//               </div>
+//             )}
+
+//             <a
+//               href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+//               download
+//               className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+//             >
+//               <Download size={16} /> Download
+//             </a>
+//           </div>
+//         ))}
+
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default StudyMaterial;
+
+
+import React, { useEffect, useState, useCallback } from "react";
 import api from "../utils/axios";
 import Header from "../components/Header";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 const getEmbedUrl = (url) => {
@@ -244,21 +446,60 @@ const StudyMaterial = () => {
   const [subjectFilter, setSubjectFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [showMobileFilters, setShowMobileFilters] = useState(false);
-  
+
+  const [protectedView, setProtectedView] = useState({ open: false, url: "", title: "" });
+  const [isBlurred, setIsBlurred] = useState(false);
 
   useEffect(() => {
-     const fetchMaterials = async () => {
-    try {
-      const res = await api.get("/materials");
-      setMaterials(res.data.reverse());
-    } catch (err) {
-      console.error("Failed to fetch materials:", err);
-    }
-  };
+    const fetchMaterials = async () => {
+      try {
+        const res = await api.get("/materials");
+        setMaterials(res.data.reverse());
+      } catch (err) {
+        console.error("Failed to fetch materials:", err);
+      }
+    };
     fetchMaterials();
   }, []);
 
- 
+  // Block copy/paste/selection in protected mode
+  useEffect(() => {
+    if (!protectedView.open) return;
+
+    const handleContextMenu = (e) => e.preventDefault();
+    const handleCopy = (e) => e.preventDefault();
+    const handleKeyDown = (e) => {
+      if (
+        e.key === "PrintScreen" ||
+        (e.ctrlKey && e.key === "p") ||
+        (e.metaKey && e.shiftKey && e.key.toLowerCase() === "s")
+      ) {
+        e.preventDefault();
+        setIsBlurred(true);
+        setTimeout(() => setIsBlurred(false), 2000);
+      }
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Possible screenshot or switching apps
+        setIsBlurred(true);
+      } else {
+        setTimeout(() => setIsBlurred(false), 1000);
+      }
+    };
+
+    document.addEventListener("contextmenu", handleContextMenu);
+    document.addEventListener("copy", handleCopy);
+    document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("contextmenu", handleContextMenu);
+      document.removeEventListener("copy", handleCopy);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [protectedView.open]);
 
   const filteredMaterials = materials
     .filter((item) =>
@@ -271,6 +512,15 @@ const StudyMaterial = () => {
     });
 
   const uniqueSubjects = [...new Set(materials.map((m) => m.subject))];
+
+  const openProtectedPDF = (url, title) => {
+    setProtectedView({ open: true, url, title });
+  };
+
+  const closeProtectedPDF = () => {
+    setProtectedView({ open: false, url: "", title: "" });
+    setIsBlurred(false);
+  };
 
   return (
     <div>
@@ -318,9 +568,6 @@ const StudyMaterial = () => {
                 onClick={() => setShowMobileFilters(!showMobileFilters)}
                 className="flex items-center gap-1 text-sm text-green-600 border border-green-500 px-3 py-1 rounded-full"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707l-5.586 5.586A1 1 0 0115 13v5a1 1 0 01-.553.894l-4 2A1 1 0 019 20v-7.414a1 1 0 01.293-.707L15 5.414V4H4a1 1 0 01-1-1z" />
-                </svg>
                 Filters
               </button>
             </div>
@@ -362,55 +609,92 @@ const StudyMaterial = () => {
         {/* Materials Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredMaterials.map((item) => (
-          <div
-            key={item._id}
-            className="border border-zinc-200 p-4 rounded shadow-sm bg-white hover:shadow-md transition"
-          >
-            <h2 className="text-lg font-semibold text-zinc-800 mb-1">{item.title}</h2>
-            <p className="text-sm text-zinc-500 mb-2">Subject: <span className="font-medium text-zinc-700">{item.subject}</span></p>
-            <p className="text-xs text-zinc-400 mb-3">Uploaded {formatDistanceToNow(new Date(item.createdAt))} ago</p>
+            <div
+              key={item._id}
+              className="border border-zinc-200 p-4 rounded shadow-sm bg-white hover:shadow-md transition"
+            >
+              <h2 className="text-lg font-semibold text-zinc-800 mb-1">{item.title}</h2>
+              <p className="text-sm text-zinc-500 mb-2">Subject: <span className="font-medium text-zinc-700">{item.subject}</span></p>
+              <p className="text-xs text-zinc-400 mb-3">Uploaded {formatDistanceToNow(new Date(item.createdAt))} ago</p>
 
-            {item.type === "video" ? (
-              <div className="aspect-w-16 aspect-h-9 mb-2">
-                <iframe
-                  src={getEmbedUrl(item.url)}
-                  title={item.title}
-                  allowFullScreen
-                  className="w-full h-48 rounded"
-                ></iframe>
-              </div>
-            ) : (
-              <div className="mb-3">
-                <div className="aspect-w-16 aspect-h-9 border rounded overflow-hidden mb-2">
+              {item.type === "video" ? (
+                <div className="aspect-w-16 aspect-h-9 mb-2">
                   <iframe
-                    src={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
-                    className="w-full h-48"
+                    src={getEmbedUrl(item.url)}
                     title={item.title}
-                  />
+                    allowFullScreen
+                    className="w-full h-48 rounded"
+                  ></iframe>
                 </div>
+              ) : (
+                <div className="mb-3">
+                  <div className="aspect-w-16 aspect-h-9 border rounded overflow-hidden mb-2">
+                    <iframe
+                      src={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+                      className="w-full h-48"
+                      title={item.title}
+                    />
+                  </div>
+                  {item.allowDownload ? (
+                    <a
+                      href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
+                    >
+                      <FileText size={18} /> View Full PDF
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => openProtectedPDF(`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`, item.title)}
+                      className="flex items-center gap-2 text-red-600 hover:underline text-sm"
+                    >
+                      🔒 View Securely
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {item.allowDownload && item.type === "pdf" && (
                 <a
                   href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
+                  download
+                  className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
                 >
-                  <FileText size={18} /> View Full PDF
+                  <Download size={16} /> Download
                 </a>
-              </div>
-            )}
-
-            <a
-              href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
-              download
-              className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
-            >
-              <Download size={16} /> Download
-            </a>
-          </div>
-        ))}
-
+              )}
+            </div>
+          ))}
         </div>
       </div>
+
+      {/* Protected PDF Modal */}
+      {protectedView.open && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-4xl w-full relative p-4 select-none">
+            <button
+              onClick={closeProtectedPDF}
+              className="absolute top-2 right-2 text-gray-600 hover:text-black"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-lg font-bold mb-3">{protectedView.title}</h2>
+            <div className={`relative w-full h-[80vh] border rounded overflow-hidden ${isBlurred ? "blur-lg" : ""}`}>
+              <iframe
+                src={protectedView.url}
+                className="w-full h-full pointer-events-none"
+                title="Protected PDF"
+              />
+              {isBlurred && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 text-white text-xl font-bold">
+                  Screenshot/Copy Blocked
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

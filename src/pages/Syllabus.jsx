@@ -14,7 +14,7 @@ const Syllabus = () => {
         {/* Video Section */}
         <div className="video mb-8 text-center">
           <a
-            href="https://youtu.be/JbmpbcIfJO4?si=FIjH4yEPRTJxeoK5"
+            href="https://youtu.be/I56TG-lSepQ?si=xCExlDcrzy8VHj2Z"
             target="_blank"
             rel="noopener noreferrer"
           >

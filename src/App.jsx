@@ -37,6 +37,9 @@ import AdminUploadChapter from './pages/admin/AdminUploadChapter';
 import DynamicSubjectPage from "./pages/Dynamic Pages/DynamicSubjectPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import TermsAndConditions from "./components/TermsAndCondition"
+import RefundPolicy from "./components/Refundpolicy"
+import PrivacyPolicy from './components/Privacypolicy';
 
 // Inside your Routes
 
@@ -50,7 +53,9 @@ function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
 
-      
+      <Route path="/privacy-terms" element={<PrivacyPolicy />} />
+      <Route path="/refund-terms" element={<RefundPolicy />} />
+      <Route path="/payment-terms" element={<TermsAndConditions />} />
       <Route path="/study-materials" element={<StudyMaterials />} />
       <Route path="/syllabus" element={<Syllabus />} />
       <Route path="/register" element={<Register />} />
