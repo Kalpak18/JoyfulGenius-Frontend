@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Header from "../components/Header";
 import syllabuspage from "../assets/Syllabus_page-0001.jpg";
+import syllabuspdf from "../assets/Information2324.pdf";
 
 const Syllabus = () => {
   
@@ -55,7 +56,7 @@ const Syllabus = () => {
             For more detailed information, you can download the complete guide below:
           </p>
           <a
-            href="/src/assets/Information2324.pdf"
+            href={syllabuspdf}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             target="_blank"
             rel="noopener noreferrer"
