@@ -1,24 +1,31 @@
 const CACHE_NAME = "joyful-genius-v1";
-const urlsToCache = ["/", "/index.html", "/manifest.json", "/favicon.ico"];
+const urlsToCache = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/favicon.ico",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png"
+];
 
-// Install and cache files
+// Install and cache
 self.addEventListener("install", (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
-    })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(urlsToCache))
   );
 });
 
 // Fetch from cache, fallback to network
 self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return; // Skip POST, PUT, etc.
+
   event.respondWith(
     caches.match(event.request).then((response) => {
       return (
         response ||
         fetch(event.request).then((res) => {
-          if (!event.request.url.includes("chrome-extension")) {
+          if (event.request.url.startsWith(self.location.origin)) {
             caches.open(CACHE_NAME).then((cache) =>
               cache.put(event.request, res.clone())
             );
@@ -30,7 +37,7 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
-// Auto-update service worker
+// Activate and clean old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) =>
@@ -41,6 +48,6 @@ self.addEventListener("activate", (event) => {
           }
         })
       )
-    )
+    ).then(() => self.clients.claim())
   );
 });
