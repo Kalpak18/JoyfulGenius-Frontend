@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import syllabuspage from "../assets/Syllabus_page-0001.jpg";
 
 const Syllabus = () => {
-  const pdfPath = `${window.location.origin}/information.pdf`;
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // YouTube video details
@@ -55,7 +55,7 @@ const Syllabus = () => {
             For more detailed information, you can download the complete guide below:
           </p>
           <a
-            href={pdfPath}
+            href="/src/assets/Information2324.pdf"
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             target="_blank"
             rel="noopener noreferrer"
