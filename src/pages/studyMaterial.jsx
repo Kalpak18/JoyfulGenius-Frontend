@@ -417,8 +417,7 @@
 
 // export default StudyMaterial;
 
-
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../utils/axios";
 import Header from "../components/Header";
 import { Download, FileText, X } from "lucide-react";
@@ -440,6 +439,16 @@ const getEmbedUrl = (url) => {
   return url;
 };
 
+const LoaderOverlay = ({ text = "Loading study materials..." }) => (
+  <div className="fixed inset-0 z-50 bg-gradient-to-br from-yellow-100 via-white to-yellow-50 flex flex-col items-center justify-center">
+    <div className="relative w-20 h-20">
+      <div className="absolute inset-0 border-4 border-amber-300 rounded-full animate-ping"></div>
+      <div className="absolute inset-0 border-4 border-t-amber-500 rounded-full animate-spin"></div>
+    </div>
+    <p className="text-amber-700 font-semibold text-lg mt-4 animate-pulse">{text}</p>
+  </div>
+);
+
 const StudyMaterial = () => {
   const [materials, setMaterials] = useState([]);
   const [search, setSearch] = useState("");
@@ -450,13 +459,22 @@ const StudyMaterial = () => {
   const [protectedView, setProtectedView] = useState({ open: false, url: "", title: "" });
   const [isBlurred, setIsBlurred] = useState(false);
 
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
+
   useEffect(() => {
     const fetchMaterials = async () => {
+      setLoading(true);
+      setFetchError("");
       try {
         const res = await api.get("/materials");
+        // keep original behaviour: reverse order
         setMaterials(res.data.reverse());
       } catch (err) {
         console.error("Failed to fetch materials:", err);
+        setFetchError("Failed to load study materials. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
     fetchMaterials();
@@ -524,8 +542,12 @@ const StudyMaterial = () => {
 
   return (
     <div>
+      {/* Loader overlay while fetching */}
+      {loading && <LoaderOverlay text="Loading study materials..." />}
+
       <Header />
-      <div className="p-4 max-w-6xl mx-auto">
+
+      <div className={`p-4 max-w-6xl mx-auto transition-opacity duration-700 ${loading ? "opacity-0" : "opacity-100"}`}>
         <h1 className="text-2xl font-bold mb-4 text-center text-zinc-800">Study Materials</h1>
 
         {/* Filter Controls */}
@@ -606,67 +628,82 @@ const StudyMaterial = () => {
           </div>
         </div>
 
-        {/* Materials Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredMaterials.map((item) => (
-            <div
-              key={item._id}
-              className="border border-zinc-200 p-4 rounded shadow-sm bg-white hover:shadow-md transition"
-            >
-              <h2 className="text-lg font-semibold text-zinc-800 mb-1">{item.title}</h2>
-              <p className="text-sm text-zinc-500 mb-2">Subject: <span className="font-medium text-zinc-700">{item.subject}</span></p>
-              <p className="text-xs text-zinc-400 mb-3">Uploaded {formatDistanceToNow(new Date(item.createdAt))} ago</p>
+        {/* Fetch error */}
+        {fetchError && (
+          <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded mb-4 text-center">
+            {fetchError}
+          </div>
+        )}
 
-              {item.type === "video" ? (
-                <div className="aspect-w-16 aspect-h-9 mb-2">
-                  <iframe
-                    src={getEmbedUrl(item.url)}
-                    title={item.title}
-                    allowFullScreen
-                    className="w-full h-48 rounded"
-                  ></iframe>
-                </div>
-              ) : (
-                <div className="mb-3">
-                  <div className="aspect-w-16 aspect-h-9 border rounded overflow-hidden mb-2">
+        {/* Materials Grid or Empty Message */}
+        {!loading && filteredMaterials.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            <p className="text-lg">📭 No study materials available.</p>
+            <p className="text-sm mt-2">Try changing filters or check back later.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredMaterials.map((item) => (
+              <div
+                key={item._id}
+                className="border border-zinc-200 p-4 rounded shadow-sm bg-white hover:shadow-md transition"
+              >
+                <h2 className="text-lg font-semibold text-zinc-800 mb-1">{item.title}</h2>
+                <p className="text-sm text-zinc-500 mb-2">Subject: <span className="font-medium text-zinc-700">{item.subject}</span></p>
+                <p className="text-xs text-zinc-400 mb-3">Uploaded {formatDistanceToNow(new Date(item.createdAt))} ago</p>
+
+                {item.type === "video" ? (
+                  <div className="aspect-w-16 aspect-h-9 mb-2">
                     <iframe
-                      src={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
-                      className="w-full h-48"
+                      src={getEmbedUrl(item.url)}
                       title={item.title}
-                    />
+                      allowFullScreen
+                      className="w-full h-48 rounded"
+                    ></iframe>
                   </div>
-                  {item.allowDownload ? (
-                    <a
-                      href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
-                    >
-                      <FileText size={18} /> View Full PDF
-                    </a>
-                  ) : (
-                    <button
-                      onClick={() => openProtectedPDF(`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`, item.title)}
-                      className="flex items-center gap-2 text-red-600 hover:underline text-sm"
-                    >
-                      🔒 View Securely
-                    </button>
-                  )}
-                </div>
-              )}
+                ) : (
+                  <div className="mb-3">
+                    <div className="aspect-w-16 aspect-h-9 border rounded overflow-hidden mb-2">
+                      <iframe
+                        src={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+                        className="w-full h-48"
+                        title={item.title}
+                      />
+                    </div>
 
-              {item.allowDownload && item.type === "pdf" && (
-                <a
-                  href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
-                  download
-                  className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
-                >
-                  <Download size={16} /> Download
-                </a>
-              )}
-            </div>
-          ))}
-        </div>
+                    {item.allowDownload ? (
+                      <a
+                        href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-blue-600 hover:underline text-sm"
+                      >
+                        <FileText size={18} /> View Full PDF
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => openProtectedPDF(`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`, item.title)}
+                        className="flex items-center gap-2 text-red-600 hover:underline text-sm"
+                      >
+                        🔒 View Securely
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {item.allowDownload && item.type === "pdf" && (
+                  <a
+                    href={`${import.meta.env.VITE_API_URL.replace("/api", "")}${item.url}`}
+                    download
+                    className="inline-flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+                  >
+                    <Download size={16} /> Download
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Protected PDF Modal */}

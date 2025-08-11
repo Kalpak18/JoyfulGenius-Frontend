@@ -37,8 +37,8 @@ import AdminUploadChapter from './pages/admin/AdminUploadChapter';
 import DynamicSubjectPage from "./pages/Dynamic Pages/DynamicSubjectPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import TermsAndConditions from "./components/TermsAndCondition"
-import RefundPolicy from "./components/Refundpolicy"
+import TermsAndConditions from "./components/TermsAndCondition";
+import RefundPolicy from "./components/Refundpolicy";
 import PrivacyPolicy from './components/Privacypolicy';
 
 // Inside your Routes

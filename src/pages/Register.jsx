@@ -194,10 +194,11 @@
 
 
 
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
-import { UserPlus, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Eye, EyeOff, Loader2 } from "lucide-react";
 
 const maharashtraDistricts = [
   "Ahmednagar", "Akola", "Amravati", "Aurangabad", "Beed", "Bhandara",
@@ -223,6 +224,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -234,21 +236,23 @@ const Register = () => {
     setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
+      setError("❌ Passwords do not match. Please re-enter.");
       return;
     }
 
     try {
+      setLoading(true);
       const res = await api.post("/users/register", formData);
       const registeredUser = res.data.user;
 
-      // Auto-login: store in localStorage
       localStorage.setItem("userInfo", JSON.stringify(registeredUser));
 
-      setSuccess("✅ Account created successfully!");
-      setTimeout(() => navigate("/course-selection"), 1000);
+      setSuccess("🎉 Account created successfully! Redirecting...");
+      setTimeout(() => navigate("/course-selection"), 1500);
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || "⚠️ Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -264,12 +268,12 @@ const Register = () => {
         </div>
 
         {error && (
-          <div className="bg-red-100 text-red-700 text-sm rounded px-4 py-2 mb-3 text-center">
+          <div className="bg-red-100 border border-red-300 text-red-700 text-sm rounded px-4 py-2 mb-3 text-center animate-shake">
             {error}
           </div>
         )}
         {success && (
-          <div className="bg-green-100 text-green-700 text-sm rounded px-4 py-2 mb-3 text-center">
+          <div className="bg-green-100 border border-green-300 text-green-700 text-sm rounded px-4 py-2 mb-3 text-center animate-fadeIn">
             {success}
           </div>
         )}
@@ -364,9 +368,11 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded shadow transition"
+            disabled={loading}
+            className="w-full flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded shadow transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
-            Register
+            {loading ? <Loader2 size={20} className="animate-spin mr-2" /> : null}
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 

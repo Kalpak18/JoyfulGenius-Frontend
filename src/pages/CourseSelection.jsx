@@ -25,7 +25,8 @@ const CourseSelection = () => {
         "100 Online Test",
         "6000+ प्रश्नांचा समावेश",
         "प्रकरणाच्या भारांशानुसार प्रश्न संख्या",
-        "प्रत्येक टेस्ट नंतर त्वरित निकाल",
+        // "प्रत्येक टेस्ट नंतर त्वरित निकाल",
+        "मराठी व सेमी इंग्रजीत टेस्ट उपलब्ध",
         "एक टेस्ट तीन वेळा सोडवता येईल",
         "अंतिम परीक्षेला 130+ गुणांसाठी बक्षीस",    
       ],
@@ -124,7 +125,7 @@ const CourseSelection = () => {
                     <span className="bg-emerald-100 p-1.5 max-md:p-1 rounded-full mr-3 max-md:mr-2 flex-shrink-0">
                       <Check className="text-emerald-600 w-4 h-4 max-md:w-3 max-md:h-3" />
                     </span>
-                    <span className="text-gray-700 max-md:text-sm">{advantage}</span>
+                    <span className="text-gray-700 font-semibold max-md:text-sm">{advantage}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -193,7 +194,7 @@ const CourseSelection = () => {
                     <span className="bg-indigo-100 p-1.5 max-md:p-1 rounded-full mr-3 max-md:mr-2 flex-shrink-0">
                       <Check className="text-indigo-600 w-4 h-4 max-md:w-3 max-md:h-3" />
                     </span>
-                    <span className="text-gray-700 max-md:text-sm">{advantage}</span>
+                    <span className="text-gray-700 font-semibold max-md:text-sm">{advantage}</span>
                   </motion.li>
                 ))}
               </ul>

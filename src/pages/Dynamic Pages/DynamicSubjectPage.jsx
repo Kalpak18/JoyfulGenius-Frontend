@@ -32,7 +32,7 @@ const DynamicSubjectPage = () => {
   const heading =
     languageFilter.toLowerCase() === "english"
       ? `${subjectInfo.icon} ${subjectInfo.en} Chapters`
-      : `${subjectInfo.icon} ${subjectInfo.mr} अध्याय`;
+      : `${subjectInfo.icon} ${subjectInfo.mr} अभ्यासक्रम`;
 
   useEffect(() => {
     const fetchChapters = async () => {
@@ -136,14 +136,14 @@ const DynamicSubjectPage = () => {
             <p className="text-gray-600">
               {languageFilter === "English"
                 ? "Loading chapters..."
-                : "अध्याय लोड होत आहेत..."}
+                : "अभ्यासक्रम लोड होत आहेत..."}
             </p>
           </div>
         ) : filteredChapters.length === 0 ? (
           <p className="text-center text-gray-500 mt-12">
             {languageFilter === "English"
               ? "No chapters found for this subject."
-              : "या विषयासाठी अध्याय सापडले नाहीत."}
+              : "या विषयासाठी अभ्यासक्रम सापडले नाही."}
           </p>
         ) : (
           <SubjectPage subject={subjectName} chapters={filteredChapters} />
@@ -335,14 +335,14 @@ export default DynamicSubjectPage;
 //             <p className="text-gray-600">
 //               {languageFilter === "English" 
 //                 ? "Loading chapters..." 
-//                 : "अध्याय लोड होत आहेत..."}
+//                 : "अभ्यासक्रम लोड होत आहेत..."}
 //             </p>
 //           </div>
 //         ) : filteredChapters.length === 0 ? (
 //           <p className="text-center text-gray-500 mt-12">
 //             {languageFilter === "English"
 //               ? "No chapters found for this subject."
-//               : "या विषयासाठी अध्याय सापडले नाहीत."}
+//               : "या विषयासाठी अभ्यासक्रम सापडले नाहीत."}
 //           </p>
 //         ) : (
 //           <SubjectPage 

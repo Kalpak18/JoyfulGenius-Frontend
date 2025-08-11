@@ -150,7 +150,8 @@ const isMobile = (val) => /^\d{10}$/.test(val.trim());
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email or Mobile Number
+                {/* Email or Mobile Number */}
+                Email
               </label>
               <input
                 type="text"
