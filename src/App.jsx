@@ -40,6 +40,8 @@ import ResetPassword from "./pages/ResetPassword";
 import TermsAndConditions from "./components/TermsAndCondition";
 import RefundPolicy from "./components/Refundpolicy";
 import PrivacyPolicy from './components/Privacypolicy';
+import InstallPrompt from './components/InstallPrompt';
+import ScrollRestoration from './components/ScrollRestoration';
 
 // Inside your Routes
 
@@ -47,6 +49,8 @@ import PrivacyPolicy from './components/Privacypolicy';
 
 function App() {
   return (
+    <>
+     <ScrollRestoration />
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/enroll" element={<Enroll />} />
@@ -106,6 +110,9 @@ function App() {
 <Route path="/payment" element={<PaymentPage />} />
 <Route path="/admin/questions" element={<AdminQuestions />} />
     </Routes>
+
+     <InstallPrompt />
+    </>
   );
 }
 

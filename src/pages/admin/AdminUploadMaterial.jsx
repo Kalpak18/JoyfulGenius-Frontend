@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../utils/axios';
 import { useDropzone } from 'react-dropzone';
+import api from '../../utils/axios';
 
-const AdminUploadMaterial= () => {
-  // Main state
+const AdminMaterialUpload = () => {
+  // State management
   const [materialId, setMaterialId] = useState(null);
   const [materials, setMaterials] = useState([]);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     courseName: '',
     subjectName: '',
     topicName: '',
     allowDownload: false,
     youtubeLinks: []
-  });
+  }));
   const [newYoutubeLink, setNewYoutubeLink] = useState('');
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  const [isLoadingMaterials, setIsLoadingMaterials] = useState(false);
+  const [isLoadingMaterials, setIsLoadingMaterials] = useState(true);
 
-  // Load all materials
+  // Fetch materials
+  const fetchMaterials = async () => {
+    setIsLoadingMaterials(true);
+    try {
+      const res = await api.get('/materials');
+      setMaterials(res.data.materials || []);
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to load materials' });
+    } finally {
+      setIsLoadingMaterials(false);
+    }
+  };
+
+  // Load materials on mount
   useEffect(() => {
-    const fetchMaterials = async () => {
-      setIsLoadingMaterials(true);
-      try {
-        const res = await api.get('/materials');
-        setMaterials(res.data.materials || []);
-      } catch (err) {
-        setMessage({ type: 'error', text: 'Failed to load materials' });
-      } finally {
-        setIsLoadingMaterials(false);
-      }
-    };
     fetchMaterials();
   }, []);
 
@@ -42,7 +44,7 @@ const AdminUploadMaterial= () => {
       'image/*': ['.png', '.jpg', '.jpeg'],
       'video/*': ['.mp4']
     },
-    maxSize: 50 * 1024 * 1024, // 50MB
+    maxSize: 50 * 1024 * 1024,
     onDrop: acceptedFiles => {
       setFiles(prev => [...prev, ...acceptedFiles]);
     }
@@ -52,13 +54,14 @@ const AdminUploadMaterial= () => {
   const loadMaterialForEdit = async (id) => {
     try {
       const res = await api.get(`/materials/${id}`);
-      const material = res.data.material;
+      const { material } = res.data;
+      
       setMaterialId(id);
       setFormData({
-        courseName: material.courseName,
-        subjectName: material.subjectName,
-        topicName: material.topicName,
-        allowDownload: material.files.some(f => f.allowDownload),
+        courseName: material.courseName || '',
+        subjectName: material.subjectName || '',
+        topicName: material.topicName || '',
+        allowDownload: material.files?.some(f => f.allowDownload) || false,
         youtubeLinks: material.youtubeLinks || []
       });
       setFiles([]);
@@ -92,10 +95,7 @@ const AdminUploadMaterial= () => {
       const res = await api.post(endpoint, formDataToSend);
 
       // Update materials list
-      setMaterials(prev => materialId
-        ? prev.map(m => m._id === materialId ? res.data.material : m)
-        : [res.data.material, ...prev]
-      );
+      await fetchMaterials();
 
       setMessage({ type: 'success', text: materialId ? 'Material updated!' : 'Material created!' });
       
@@ -109,6 +109,7 @@ const AdminUploadMaterial= () => {
           youtubeLinks: []
         });
         setFiles([]);
+        setMaterialId(null);
       }
     } catch (err) {
       setMessage({ 
@@ -140,7 +141,7 @@ const AdminUploadMaterial= () => {
     if (window.confirm('Are you sure you want to delete this material permanently?')) {
       try {
         await api.delete(`/materials/${id}`);
-        setMaterials(prev => prev.filter(m => m._id !== id));
+        await fetchMaterials();
         if (materialId === id) {
           setMaterialId(null);
           setFormData({
@@ -211,9 +212,9 @@ const AdminUploadMaterial= () => {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-medium">{material.topicName}</h3>
+                      <h3 className="font-medium">{material.topicName || 'Untitled Material'}</h3>
                       <p className="text-sm text-gray-600">
-                        {material.courseName} → {material.subjectName}
+                        {material.courseName || 'No Course'} → {material.subjectName || 'No Subject'}
                       </p>
                     </div>
                     <button 
@@ -228,7 +229,9 @@ const AdminUploadMaterial= () => {
                   </div>
                   <div className="flex justify-between mt-2 text-xs text-gray-500">
                     <span>{material.files?.length || 0} files</span>
-                    <span>{new Date(material.uploadedAt).toLocaleDateString()}</span>
+                    <span>
+                      {material.uploadedAt ? new Date(material.uploadedAt).toLocaleDateString() : 'No date'}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -245,7 +248,7 @@ const AdminUploadMaterial= () => {
                 <label className="block text-sm font-medium mb-1">Course Name*</label>
                 <input
                   type="text"
-                  value={formData.courseName}
+                  value={formData.courseName || ''}
                   onChange={(e) => setFormData({...formData, courseName: e.target.value})}
                   className="w-full p-2 border rounded"
                   required
@@ -255,7 +258,7 @@ const AdminUploadMaterial= () => {
                 <label className="block text-sm font-medium mb-1">Subject Name*</label>
                 <input
                   type="text"
-                  value={formData.subjectName}
+                  value={formData.subjectName || ''}
                   onChange={(e) => setFormData({...formData, subjectName: e.target.value})}
                   className="w-full p-2 border rounded"
                   required
@@ -265,7 +268,7 @@ const AdminUploadMaterial= () => {
                 <label className="block text-sm font-medium mb-1">Topic Name*</label>
                 <input
                   type="text"
-                  value={formData.topicName}
+                  value={formData.topicName || ''}
                   onChange={(e) => setFormData({...formData, topicName: e.target.value})}
                   className="w-full p-2 border rounded"
                   required
@@ -278,7 +281,7 @@ const AdminUploadMaterial= () => {
               <input
                 type="checkbox"
                 id="allowDownload"
-                checked={formData.allowDownload}
+                checked={formData.allowDownload || false}
                 onChange={(e) => setFormData({...formData, allowDownload: e.target.checked})}
                 className="mr-2"
               />
@@ -353,7 +356,7 @@ const AdminUploadMaterial= () => {
               <div className="flex gap-2">
                 <input
                   type="text"
-                  value={newYoutubeLink}
+                  value={newYoutubeLink || ''}
                   onChange={(e) => setNewYoutubeLink(e.target.value)}
                   placeholder="https://www.youtube.com/watch?v=..."
                   className="flex-1 p-2 border rounded text-sm"
@@ -418,4 +421,4 @@ const AdminUploadMaterial= () => {
   );
 };
 
-export default AdminUploadMaterial;
+export default AdminMaterialUpload;

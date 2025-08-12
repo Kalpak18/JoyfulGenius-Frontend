@@ -84,7 +84,7 @@ const ProtectedTestButton = ({ testLink }) => {
           : "bg-gray-500 hover:bg-gray-600"
       } text-white font-semibold py-2 px-4 rounded-full text-center shadow transition duration-300 ease-in-out`}
     >
-      🧠 Master Test {isPaid ? "" : "(Locked)"}
+      🧠 Master Test {isPaid ? "" : ""}
     </button>
   );
 };
