@@ -1,492 +1,106 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
+import Header from "../components/Header";
+import syllabuspage from "../assets/Syllabus_page-0001.jpg";
+import syllabuspdf from "../assets/Information2324.pdf";
 
-const AdminUploadMaterial = ({ materialId }) => {
-  // States for metadata
-  const [courseName, setCourseName] = useState("");
-  const [subjectName, setSubjectName] = useState("");
-  const [topicName, setTopicName] = useState("");
-  const [allowDownload, setAllowDownload] = useState(false);
+const Syllabus = () => {
 
-  // Files & YouTube links states
-  const [existingFiles, setExistingFiles] = useState([]);
-  const [existingYouTubeLinks, setExistingYouTubeLinks] = useState([]);
-  const [newFiles, setNewFiles] = useState([]);
-  const [newYouTubeInput, setNewYouTubeInput] = useState("");
-  const [newYouTubeLinks, setNewYouTubeLinks] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Feedback states
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  // YouTube video details
+  const videoId = "I56TG-lSepQ";
+  const youtubeThumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  const youtubeEmbed = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
 
-  useEffect(() => {
-    if (!materialId) return;
-
-    setLoading(true);
-    fetch(`/api/materials/${materialId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.material) {
-          const m = data.material;
-          setCourseName(m.courseName || "");
-          setSubjectName(m.subjectName || "");
-          setTopicName(m.topicName || "");
-          setExistingFiles(m.files || []);
-          setExistingYouTubeLinks(m.youtubeLinks || []);
-          setAllowDownload(false);
-        } else {
-          setError(data.error || "Failed to load material");
-        }
-      })
-      .catch(() => setError("Failed to load material"))
-      .finally(() => setLoading(false));
-  }, [materialId]);
-
-  const handleNewFilesChange = (e) => {
-    setNewFiles([...newFiles, ...Array.from(e.target.files)]);
-  };
-  const removeNewFile = (index) => {
-    setNewFiles(newFiles.filter((_, i) => i !== index));
-  };
-
-  const addNewYouTubeLink = () => {
-    if (!newYouTubeInput.trim()) return;
-    setNewYouTubeLinks([...newYouTubeLinks, newYouTubeInput.trim()]);
-    setNewYouTubeInput("");
-  };
-  const removeNewYouTubeLink = (index) => {
-    setNewYouTubeLinks(newYouTubeLinks.filter((_, i) => i !== index));
-  };
-
-  const deleteExistingFile = async (fileId) => {
-    if (!window.confirm("Delete this file?")) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/materials/${materialId}/file/${fileId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (data.success) {
-        setExistingFiles(existingFiles.filter((f) => f._id !== fileId));
-        setMessage("File deleted");
-      } else {
-        setError(data.error || "Failed to delete file");
-      }
-    } catch {
-      setError("Failed to delete file");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const replaceExistingFile = async (fileId, file) => {
-    if (!file) return;
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("files", file);
-      formData.append("allowDownload", allowDownload.toString());
-
-      const res = await fetch(`/api/materials/${materialId}/file/${fileId}`, {
-        method: "PUT",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success) {
-        setExistingFiles((files) =>
-          files.map((f) => (f._id === fileId ? data.material.files.find((nf) => nf._id === fileId) : f))
-        );
-        setMessage("File replaced");
-      } else {
-        setError(data.error || "Failed to replace file");
-      }
-    } catch {
-      setError("Failed to replace file");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteExistingYouTubeLink = async (index) => {
-    if (!window.confirm("Delete this YouTube link?")) return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/materials/${materialId}/youtube/${index}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-      });
-      const data = await res.json();
-      if (data.success) {
-        setExistingYouTubeLinks(existingYouTubeLinks.filter((_, i) => i !== index));
-        setMessage("YouTube link deleted");
-      } else {
-        setError(data.error || "Failed to delete YouTube link");
-      }
-    } catch {
-      setError("Failed to delete YouTube link");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setMessage("");
-    setLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("courseName", courseName);
-      formData.append("subjectName", subjectName);
-      formData.append("topicName", topicName);
-      formData.append("allowDownload", allowDownload.toString());
-
-      newFiles.forEach((file) => formData.append("files", file));
-      newYouTubeLinks.forEach((link) => formData.append("youtubeLinks", link));
-
-      if (materialId) {
-        formData.append("materialId", materialId);
-      }
-
-      const res = await fetch("/api/materials/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        setMessage(materialId ? "Material updated" : "Material uploaded");
-        setExistingFiles(data.material.files || []);
-        setExistingYouTubeLinks(data.material.youtubeLinks || []);
-        setNewFiles([]);
-        setNewYouTubeLinks([]);
-        setNewYouTubeInput("");
-      } else {
-        setError(data.error || "Failed to upload material");
-      }
-    } catch {
-      setError("Failed to upload material");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Styles as JS objects:
-  const containerStyle = {
-    maxWidth: 700,
-    margin: "2rem auto",
-    padding: "1rem 1.5rem",
-    backgroundColor: "#f9fafb",
-    borderRadius: 8,
-    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-  };
-  const headingStyle = {
-    marginBottom: "1rem",
-    color: "#1f2937",
-  };
-  const formStyle = {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1.2rem",
-  };
-  const labelStyle = {
-    fontWeight: 600,
-    color: "#374151",
-    display: "block",
-    marginBottom: "0.4rem",
-  };
-  const inputStyle = {
-    width: "100%",
-    padding: "0.4rem 0.6rem",
-    border: "1.5px solid #d1d5db",
-    borderRadius: 5,
-    fontSize: "1rem",
-    outlineOffset: 2,
-  };
-  const inputFocusStyle = {
-    borderColor: "#2563eb",
-    outline: "none",
-  };
-  const checkboxLabelStyle = {
-    fontWeight: 500,
-    color: "#374151",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-  };
-  const sectionStyle = {
-    marginTop: "1rem",
-    paddingTop: "0.8rem",
-    borderTop: "1px solid #e5e7eb",
-  };
-  const fileListStyle = {
-    listStyle: "none",
-    paddingLeft: 0,
-    marginTop: "0.6rem",
-  };
-  const fileItemStyle = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "white",
-    padding: "0.5rem 1rem",
-    borderRadius: 5,
-    boxShadow: "0 0 4px rgba(0,0,0,0.05)",
-    marginBottom: "0.5rem",
-  };
-  const btnStyle = {
-    cursor: "pointer",
-    border: "none",
-    padding: "0.3rem 0.8rem",
-    borderRadius: 4,
-    fontSize: "0.9rem",
-    marginLeft: 8,
-    transition: "background-color 0.2s ease",
-  };
-  const btnDanger = {
-    ...btnStyle,
-    backgroundColor: "#dc2626",
-    color: "white",
-  };
-  const btnDangerHover = {
-    backgroundColor: "#b91c1c",
-  };
-  const btnPrimary = {
-    ...btnStyle,
-    backgroundColor: "#2563eb",
-    color: "white",
-  };
-  const btnPrimaryHover = {
-    backgroundColor: "#1e40af",
-  };
-  const btnLink = {
-    background: "none",
-    color: "#2563eb",
-    padding: 0,
-    border: "none",
-    textDecoration: "underline",
-    cursor: "pointer",
-  };
-  const btnSubmit = {
-    backgroundColor: "#16a34a",
-    color: "white",
-    padding: "0.7rem 1.5rem",
-    fontSize: "1rem",
-    borderRadius: 6,
-    transition: "background-color 0.3s ease",
-    marginTop: "1rem",
-  };
-  const infoStyle = {
-    color: "#2563eb",
-    fontWeight: 600,
-  };
-  const successStyle = {
-    color: "#16a34a",
-    fontWeight: 600,
-  };
-  const errorStyle = {
-    color: "#dc2626",
-    fontWeight: 600,
-  };
+  const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div style={containerStyle}>
-      <h2 style={headingStyle}>{materialId ? "Edit Study Material" : "Upload Study Material"}</h2>
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow flex flex-col items-center justify-center p-4">
+        <h2 className="text-3xl font-bold mb-6 text-center">
+          Syllabus & Exam Pattern
+        </h2>
 
-      {loading && <p style={infoStyle}>Loading...</p>}
-      {message && <p style={successStyle}>{message}</p>}
-      {error && <p style={errorStyle}>{error}</p>}
-
-      <form onSubmit={handleSubmit} style={formStyle}>
-        <div>
-          <label style={labelStyle}>
-            Course Name:
-            <input
-              type="text"
-              value={courseName}
-              onChange={(e) => setCourseName(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </label>
-        </div>
-
-        <div>
-          <label style={labelStyle}>
-            Subject Name:
-            <input
-              type="text"
-              value={subjectName}
-              onChange={(e) => setSubjectName(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </label>
-        </div>
-
-        <div>
-          <label style={labelStyle}>
-            Topic Name:
-            <input
-              type="text"
-              value={topicName}
-              onChange={(e) => setTopicName(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </label>
-        </div>
-
-        <div style={{ marginTop: 8 }}>
-          <label style={checkboxLabelStyle}>
-            <input
-              type="checkbox"
-              checked={allowDownload}
-              onChange={() => setAllowDownload((prev) => !prev)}
-            />
-            Allow Download for New Files
-          </label>
-        </div>
-
-        {existingFiles.length > 0 && (
-          <div style={sectionStyle}>
-            <h3>Existing Files</h3>
-            <ul style={fileListStyle}>
-              {existingFiles.map((file) => (
-                <li key={file._id} style={fileItemStyle}>
-                  <div>
-                    <strong>{file.fileName}</strong> ({file.mimeType}) -{" "}
-                    {file.allowDownload ? "Download allowed" : "No download"}
-                  </div>
-                  <div>
-                    <button
-                      type="button"
-                      onClick={() => deleteExistingFile(file._id)}
-                      disabled={loading}
-                      style={btnDanger}
-                    >
-                      Delete
-                    </button>
-                    <label style={{ ...btnLink, marginLeft: 8, cursor: loading ? "default" : "pointer" }}>
-                      Replace
-                      <input
-                        type="file"
-                        style={{ display: "none" }}
-                        onChange={(e) => replaceExistingFile(file._id, e.target.files[0])}
-                        disabled={loading}
-                      />
-                    </label>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {existingYouTubeLinks.length > 0 && (
-          <div style={sectionStyle}>
-            <h3>Existing YouTube Links</h3>
-            <ul style={fileListStyle}>
-              {existingYouTubeLinks.map((link, i) => (
-                <li key={i} style={fileItemStyle}>
-                  <a href={link} target="_blank" rel="noreferrer">
-                    {link}
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => deleteExistingYouTubeLink(i)}
-                    disabled={loading}
-                    style={btnDanger}
-                  >
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div style={sectionStyle}>
-          <h3>Add New Files</h3>
-          <input
-            type="file"
-            multiple
-            onChange={handleNewFilesChange}
-            disabled={loading}
-            style={inputStyle}
-          />
-          {newFiles.length > 0 && (
-            <ul style={fileListStyle}>
-              {newFiles.map((file, i) => (
-                <li key={i} style={fileItemStyle}>
-                  {file.name} ({Math.round(file.size / 1024)} KB)
-                  <button
-                    type="button"
-                    onClick={() => removeNewFile(i)}
-                    disabled={loading}
-                    style={btnDanger}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div style={sectionStyle}>
-          <h3>Add New YouTube Links</h3>
-          <input
-            type="text"
-            placeholder="Paste YouTube link"
-            value={newYouTubeInput}
-            onChange={(e) => setNewYouTubeInput(e.target.value)}
-            disabled={loading}
-            style={inputStyle}
-          />
-          <button
-            type="button"
-            onClick={addNewYouTubeLink}
-            disabled={loading || !newYouTubeInput.trim()}
-            style={btnPrimary}
+        {/* Video Section */}
+        <div className="video mb-8 text-center cursor-pointer">
+          <div
+            onClick={() => setIsModalOpen(true)}
+            className="border-4 border-blue-500 rounded-lg overflow-hidden shadow-lg hover:scale-105 transition-transform duration-300"
           >
-            Add Link
-          </button>
-          {newYouTubeLinks.length > 0 && (
-            <ul style={fileListStyle}>
-              {newYouTubeLinks.map((link, i) => (
-                <li key={i} style={fileItemStyle}>
-                  <a href={link} target="_blank" rel="noreferrer">
-                    {link}
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => removeNewYouTubeLink(i)}
-                    disabled={loading}
-                    style={btnDanger}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+            <img
+              src={youtubeThumbnail}
+              alt="Watch the Syllabus Video"
+              className="w-full max-w-2xl mx-auto"
+            />
+          </div>
+          <p className="text-red-600 font-semibold mt-2 max-w-2xl mx-auto">
+            NMMS परीक्षा संपूर्ण माहिती , कोटा व लागणारी कागदपत्रे याबद्दल संक्षिप्त स्वरूपात
+            माहिती साठी फोटो वर क्लिक करा !!
+          </p>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={btnSubmit}
+        {/* Syllabus Section */}
+        <div className="syllabus-screenshot bg-white p-6 rounded-lg shadow-md max-w-2xl w-full text-center">
+          <h3 className="text-2xl font-bold mb-4">NMMS Syllabus</h3>
+          <p className="mb-4">
+            राष्ट्रीय आर्थिक दुर्बल घटक विद्यार्थ्यांसाठी शिष्यवृत्ती योजना परीक्षा (NMMS)
+          </p>
+          <img
+            src={syllabuspage}
+            alt="Read the syllabus"
+            className="w-full max-w-4xl mx-auto"
+          />
+          <p className="mb-4">
+            For more detailed information, you can download the complete guide below:
+          </p>
+          <a
+            href={syllabuspdf}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Download PDF
+          </a>
+        </div>
+      </main>
+
+      {/* Video Modal */}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4"
+          onClick={closeModal} // Close when clicking outside
         >
-          {materialId ? "Update Material" : "Upload Material"}
-        </button>
-      </form>
+          <div
+            className="relative bg-black rounded-lg shadow-lg w-full max-w-4xl aspect-video"
+            onClick={(e) => e.stopPropagation()} // Prevent close when clicking inside
+          >
+            <iframe
+              width="100%"
+              height="100%"
+              src={youtubeEmbed}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            ></iframe>
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 bg-white text-black rounded-full p-2 hover:bg-red-500 hover:text-white transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Footer Section */}
+      <footer className="bg-gray-800 text-white text-center p-4">
+        <p>&copy; 2024 NMMS Prep. All rights reserved.</p>
+      </footer>
     </div>
   );
 };
 
-export default AdminUploadMaterial;
+export default Syllabus;
