@@ -18,21 +18,20 @@ self.addEventListener("install", (event) => {
 
 // Fetch from cache, fallback to network
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return; // Skip POST, PUT, etc.
+  if (event.request.method !== "GET") return;
 
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return (
-        response ||
-        fetch(event.request).then((res) => {
-          if (event.request.url.startsWith(self.location.origin)) {
-            caches.open(CACHE_NAME).then((cache) =>
-              cache.put(event.request, res.clone())
-            );
-          }
-          return res;
-        })
-      );
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).then((networkResponse) => {
+        const responseClone = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseClone);
+        });
+        return networkResponse;
+      });
     })
   );
 });

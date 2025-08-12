@@ -14,28 +14,19 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate', // updates automatically
-      includeAssets: [
-        'favicon.ico',
-        'icons/icon-192.png',
-        'icons/icon-512.png'
-      ],
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'icons/icon-192.png', 'icons/icon-512.png'],
       workbox: {
         runtimeCaching: [
           {
-            // HTML (index.html) - always get network first
             urlPattern: ({ request }) => request.destination === 'document',
             handler: 'NetworkFirst',
             options: {
               cacheName: 'html-cache',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 // 1 hour
-              }
-            }
+              expiration: { maxEntries: 10, maxAgeSeconds: 3600 },
+            },
           },
           {
-            // Static assets (CSS, JS, images)
             urlPattern: ({ request }) =>
               request.destination === 'style' ||
               request.destination === 'script' ||
@@ -43,26 +34,28 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'static-assets',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-              }
-            }
+              expiration: { maxEntries: 50, maxAgeSeconds: 2592000 },
+            },
           },
           {
-            // API calls
             urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 5 // 5 minutes
-              }
-            }
-          }
-        ]
-      }
-    })
-  ]
+              expiration: { maxEntries: 50, maxAgeSeconds: 300 },
+            },
+          },
+        ],
+      },
+    }),
+  ],
+  server: {
+    host: 'localhost',
+    port: 5173,
+    hmr: {
+      protocol: 'ws',
+      host: 'localhost',
+      port: 5173,
+    },
+  },
 });
