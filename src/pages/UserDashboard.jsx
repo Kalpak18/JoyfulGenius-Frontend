@@ -1235,33 +1235,27 @@ const UserDashboard = () => {
   //   navigate("/enroll");
   // };
 
+const handleLogout = () => {
+  // Remove only auth-related items
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("userProfile");
+  sessionStorage.clear(); // optional: remove temp data
 
-  const handleLogout = () => {
-  // Clear local/session storage
-  localStorage.clear();
-  sessionStorage.clear();
-
-  // Clear all service worker caches
+  // Optionally clear only API caches
   if ('caches' in window) {
     caches.keys().then((names) => {
-      for (let name of names) {
-        caches.delete(name);
-      }
-    });
-  }
-
-  // Unregister service workers (optional, ensures no old SW stays in memory)
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      for (let registration of registrations) {
-        registration.unregister();
-      }
+      names.forEach((name) => {
+        if (name.includes("api-cache")) { // match your API cache naming
+          caches.delete(name);
+        }
+      });
     });
   }
 
   // Redirect to login
-  window.location.href = '/enroll';
+  window.location.href = "/enroll";
 };
+
 
   useEffect(() => {
     if (activeTab === "logout") handleLogout();
