@@ -51,17 +51,20 @@ import ScrollRestoration from './components/ScrollRestoration';
 
 function App() {
 
-
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (!sessionStorage.getItem("sw-updated")) {
-          sessionStorage.setItem("sw-updated", "true");
-          window.location.reload();
+useEffect(() => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then((regs) => {
+      if (regs.length) {
+        regs.forEach(r => r.unregister());
+        if ('caches' in window) {
+          caches.keys().then(names => names.forEach(n => caches.delete(n)));
         }
-      });
-    }
-  }, []);
+        window.location.reload(true); // force fresh fetch
+      }
+    });
+  }
+}, []);
+
 
   return (
     <>

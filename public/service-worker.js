@@ -179,15 +179,14 @@
 //     })()
 //   );
 // });
-
-const CACHE_NAME = "joyful-genius-v4"; // bump version when deploying
+const CACHE_NAME = "joyful-genius-v5"; // Bump version on deploy
 const STATIC_ASSETS = [
   "/",
   "/index.html",
   "/manifest.json",
   "/favicon.ico",
   "/icons/icon-192.png",
-  "/icons/icon-512.png"
+  "/icons/icon-512.png",
 ];
 
 // Install: cache static assets
@@ -198,9 +197,24 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Fetch handler
+// Activate: delete old caches
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+      await self.clients.claim();
+    })()
+  );
+});
+
+// Fetch: network-first for API, cache-first for others
 self.addEventListener("fetch", (event) => {
-  const request = event.request;
+  const { request } = event;
 
   if (request.method !== "GET") return;
 
@@ -211,6 +225,18 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith(cacheFirst(request));
 });
+
+async function networkFirst(request) {
+  try {
+    const fresh = await fetch(request, { cache: "no-store" });
+    return fresh;
+  } catch (err) {
+    const cached = await caches.match(request);
+    return cached || new Response(JSON.stringify({ error: "Offline" }), {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+}
 
 async function cacheFirst(request) {
   const cached = await caches.match(request);
@@ -227,39 +253,3 @@ async function cacheFirst(request) {
     }
   }
 }
-
-async function networkFirst(request) {
-  try {
-    const fresh = await fetch(request.url, { cache: "no-store" });
-    return fresh;
-  } catch (err) {
-    const cached = await caches.match(request);
-    return cached || new Response(JSON.stringify({ error: "Offline" }), {
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-}
-
-// Activate: clear old caches & reload only once
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    (async () => {
-      const cacheNames = await caches.keys();
-      await Promise.all(
-        cacheNames.map((name) => {
-          if (name !== CACHE_NAME) {
-            return caches.delete(name);
-          }
-        })
-      );
-
-      await self.clients.claim();
-
-      // Only reload once for each client
-      const allClients = await self.clients.matchAll({ type: "window" });
-      allClients.forEach((client) => {
-        client.postMessage({ type: "NEW_SW_ACTIVATED" });
-      });
-    })()
-  );
-});

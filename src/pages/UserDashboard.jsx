@@ -1236,16 +1236,23 @@ const UserDashboard = () => {
   // };
 
 const handleLogout = () => {
+  // Clear storage
   localStorage.clear();
   sessionStorage.clear();
 
-  if ("caches" in window) {
-    caches.keys().then((names) => {
-      names.forEach((name) => caches.delete(name));
+  // Unregister SWs and clear caches
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach((reg) => reg.unregister());
     });
   }
 
-  window.location.href = "/enroll"; // Redirect to login
+  if ("caches" in window) {
+    caches.keys().then((names) => names.forEach((name) => caches.delete(name)));
+  }
+
+  // Redirect to login/enroll page
+  window.location.href = "/enroll";
 };
 
 
