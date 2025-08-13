@@ -1,7 +1,5 @@
 // App.jsx — FIXED VERSION
 import { Routes, Route } from 'react-router-dom'; // ⬅ remove BrowserRouter from here
-import React, { useEffect } from "react";
-
 import Home from './pages/Home';
 import Enroll from './pages/Enroll';
 import StudyMaterials from './pages/studyMaterial';
@@ -50,19 +48,6 @@ import ScrollRestoration from './components/ScrollRestoration';
 // import AdminQuestions from './pages/admin/AdminQuestion';
 
 function App() {
-
-    // 🔹 Service Worker update listener
-  useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.addEventListener("message", (event) => {
-        if (event.data?.type === "NEW_VERSION_AVAILABLE") {
-          if (window.confirm("A new version is available. Reload now?")) {
-            window.location.reload();
-          }
-        }
-      });
-    }
-  }, []);
 
   return (
     <>
