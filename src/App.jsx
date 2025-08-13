@@ -48,8 +48,23 @@ import ScrollRestoration from './components/ScrollRestoration';
 // import AdminQuestions from './pages/admin/AdminQuestion';
 
 function App() {
+
+    // 🔹 Service Worker update listener
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data?.type === "NEW_VERSION_AVAILABLE") {
+          if (window.confirm("A new version is available. Reload now?")) {
+            window.location.reload();
+          }
+        }
+      });
+    }
+  }, []);
+
   return (
     <>
+     <InstallPrompt />
      <ScrollRestoration />
     <Routes>
       <Route path="/" element={<Home />} />
@@ -111,7 +126,7 @@ function App() {
 <Route path="/admin/questions" element={<AdminQuestions />} />
     </Routes>
 
-     <InstallPrompt />
+    
     </>
   );
 }

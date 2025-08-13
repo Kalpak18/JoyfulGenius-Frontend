@@ -94,7 +94,8 @@
 //   );
 // });
 
-const CACHE_NAME = "joyful-genius-v2"; // bump version when deploying
+
+const CACHE_NAME = "joyful-genius-v2"; // bump when deploying
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -112,24 +113,21 @@ self.addEventListener("install", (event) => {
   );
 });
 
-// Fetch: Different strategies for API and static assets
+// Fetch: Network-first for API calls, cache-first for static assets
 self.addEventListener("fetch", (event) => {
   const request = event.request;
 
-  // Skip caching for non-GET requests
   if (request.method !== "GET") return;
 
-  // Network-first for API calls (fresh data always)
   if (request.url.includes("/api/")) {
     event.respondWith(networkFirst(request));
     return;
   }
 
-  // Cache-first for static files
   event.respondWith(cacheFirst(request));
 });
 
-// Cache-first strategy (static files)
+// Cache-first strategy
 async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
@@ -146,10 +144,9 @@ async function cacheFirst(request) {
   }
 }
 
-// Network-first strategy (API calls)
+// Network-first strategy
 async function networkFirst(request) {
   try {
-    // Force bypass browser cache
     const fresh = await fetch(request.url, { cache: "no-store" });
     return fresh;
   } catch (err) {
@@ -160,33 +157,25 @@ async function networkFirst(request) {
   }
 }
 
-// Activate: Clear old caches & claim clients
+// Activate: clear old caches & notify clients of new version
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((names) =>
-      Promise.all(
-        names.map((name) => {
+    (async () => {
+      const cacheNames = await caches.keys();
+      await Promise.all(
+        cacheNames.map((name) => {
           if (name !== CACHE_NAME) {
             return caches.delete(name);
           }
         })
-      )
-    ).then(() => self.clients.claim())
-  );
-});
+      );
 
-// Auto-refresh when new SW is activated
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
-});
+      await self.clients.claim();
 
-// Reload all open pages when SW activates
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    self.clients.matchAll({ type: "window" }).then((clients) => {
-      clients.forEach((client) => client.navigate(client.url));
-    })
+      const allClients = await self.clients.matchAll({ type: "window" });
+      allClients.forEach((client) => {
+        client.postMessage({ type: "NEW_VERSION_AVAILABLE" });
+      });
+    })()
   );
 });
