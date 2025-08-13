@@ -53,17 +53,22 @@ function App() {
 
 useEffect(() => {
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then((regs) => {
-      if (regs.length) {
-        regs.forEach(r => r.unregister());
+    // Only reload once per session
+    if (!sessionStorage.getItem('sw_reloaded')) {
+      navigator.serviceWorker.getRegistrations().then((regs) => {
+        if (regs.length) {
+          regs.forEach(r => r.unregister());
+        }
         if ('caches' in window) {
           caches.keys().then(names => names.forEach(n => caches.delete(n)));
         }
-        window.location.reload(true); // force fresh fetch
-      }
-    });
+        sessionStorage.setItem('sw_reloaded', 'true'); // mark that reload happened
+        window.location.reload(); // reload **once**
+      });
+    }
   }
 }, []);
+
 
 
   return (
