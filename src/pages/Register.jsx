@@ -227,6 +227,24 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
+     let { name, value } = e.target;
+
+  if (name === "whatsappNo") {
+    // Remove all non-digit characters
+    let digitsOnly = value.replace(/\D/g, "");
+
+    // If starts with '91' and is longer than 10 digits, take last 10 digits
+    if (digitsOnly.startsWith("91") && digitsOnly.length > 10) {
+      digitsOnly = digitsOnly.slice(-10);
+    }
+
+    // Limit input to max 13 digits (country code + number) just for UI control
+    if (digitsOnly.length > 13) return;
+
+    setFormData({ ...formData, [name]: digitsOnly });
+    return;
+  }
+
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -240,9 +258,23 @@ const Register = () => {
       return;
     }
 
+     // WhatsApp validation (exactly 10 digits after cleanup)
+  const cleanNumber = formData.whatsappNo.replace(/\D/g, "");
+  const finalNumber = cleanNumber.startsWith("91") && cleanNumber.length > 10
+    ? cleanNumber.slice(-10)
+    : cleanNumber;
+
+  if (finalNumber.length !== 10) {
+    setError("❌ WhatsApp number must be exactly 10 digits.");
+    return;
+  }
+
     try {
       setLoading(true);
-      const res = await api.post("/users/register", formData);
+      const res = await api.post("/users/register", {
+      ...formData,
+      whatsappNo: finalNumber // send clean 10-digit number to backend
+    });
       const registeredUser = res.data.user;
 
       localStorage.setItem("userInfo", JSON.stringify(registeredUser));

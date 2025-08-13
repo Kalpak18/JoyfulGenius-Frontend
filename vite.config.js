@@ -15,6 +15,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+       devOptions: {
+        enabled: false, 
+       },
       includeAssets: ['favicon.ico', 'icons/icon-192.png', 'icons/icon-512.png'],
       workbox: {
         runtimeCaching: [
