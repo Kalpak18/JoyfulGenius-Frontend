@@ -1,5 +1,7 @@
 // App.jsx — FIXED VERSION
 import { Routes, Route } from 'react-router-dom'; // ⬅ remove BrowserRouter from here
+import react, {useEffect} from react;
+
 import Home from './pages/Home';
 import Enroll from './pages/Enroll';
 import StudyMaterials from './pages/studyMaterial';
@@ -48,6 +50,17 @@ import ScrollRestoration from './components/ScrollRestoration';
 // import AdminQuestions from './pages/admin/AdminQuestion';
 
 function App() {
+
+   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const onDashboard = window.location.pathname.startsWith("/dashboard");
+
+    if (!token && onDashboard) {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "/";
+    }
+  }, []);
 
   return (
     <>

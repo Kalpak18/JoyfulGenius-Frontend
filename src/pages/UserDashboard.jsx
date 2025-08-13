@@ -1236,25 +1236,18 @@ const UserDashboard = () => {
   // };
 
 const handleLogout = () => {
-  // Remove only auth-related items
-  localStorage.removeItem("authToken");
-  localStorage.removeItem("userProfile");
-  sessionStorage.clear(); // optional: remove temp data
+  localStorage.clear();
+  sessionStorage.clear();
 
-  // Optionally clear only API caches
-  if ('caches' in window) {
+  if ("caches" in window) {
     caches.keys().then((names) => {
-      names.forEach((name) => {
-        if (name.includes("api-cache")) { // match your API cache naming
-          caches.delete(name);
-        }
-      });
+      names.forEach((name) => caches.delete(name));
     });
   }
 
-  // Redirect to login
-  window.location.href = "/enroll";
+  window.location.href = "/enroll"; // Redirect to login
 };
+
 
 
   useEffect(() => {
