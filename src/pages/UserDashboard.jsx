@@ -1098,7 +1098,7 @@ const UserDashboard = () => {
   // fetch user profile
   const fetchUser = async () => {
     try {
-      const res = await api.get("/users/profile", {
+      const res = await api.get("/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
