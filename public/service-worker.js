@@ -180,8 +180,7 @@
 //   );
 // });
 
-
-const CACHE_NAME = "joyful-genius-v3"; // bump version when deploying
+const CACHE_NAME = "joyful-genius-v4"; // bump version when deploying
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -241,7 +240,7 @@ async function networkFirst(request) {
   }
 }
 
-// Activate: clear old caches & force refresh
+// Activate: clear old caches & reload only once
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
@@ -256,9 +255,11 @@ self.addEventListener("activate", (event) => {
 
       await self.clients.claim();
 
-      // Force reload for all tabs
+      // Only reload once for each client
       const allClients = await self.clients.matchAll({ type: "window" });
-      allClients.forEach((client) => client.navigate(client.url));
+      allClients.forEach((client) => {
+        client.postMessage({ type: "NEW_SW_ACTIVATED" });
+      });
     })()
   );
 });

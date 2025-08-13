@@ -51,14 +51,15 @@ import ScrollRestoration from './components/ScrollRestoration';
 
 function App() {
 
-   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const onDashboard = window.location.pathname.startsWith("/dashboard");
 
-    if (!token && onDashboard) {
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = "/";
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!sessionStorage.getItem("sw-updated")) {
+          sessionStorage.setItem("sw-updated", "true");
+          window.location.reload();
+        }
+      });
     }
   }, []);
 
