@@ -56,7 +56,7 @@ api.interceptors.response.use(
       alert("Your session has expired. Please log in again.");
 
       // Redirect to login
-      window.location.href = "/login";
+      window.location.href = "/enroll";
     }
 
     return Promise.reject(error);
