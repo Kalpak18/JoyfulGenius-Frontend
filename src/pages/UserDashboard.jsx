@@ -1229,31 +1229,13 @@ const UserDashboard = () => {
     }
   };
 
-  // const handleLogout = () => {
-  //   localStorage.clear();
-  //   sessionStorage.clear();
-  //   navigate("/enroll");
-  // };
+  const handleLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/enroll");
+  };
 
-const handleLogout = () => {
-  // Clear storage
-  localStorage.clear();
-  sessionStorage.clear();
 
-  // Unregister SWs and clear caches
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      registrations.forEach((reg) => reg.unregister());
-    });
-  }
-
-  if ("caches" in window) {
-    caches.keys().then((names) => names.forEach((name) => caches.delete(name)));
-  }
-
-  // Redirect to login/enroll page
-  window.location.href = "/enroll";
-};
 
 
 
