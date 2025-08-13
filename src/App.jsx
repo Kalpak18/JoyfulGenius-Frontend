@@ -1,5 +1,7 @@
 // App.jsx — FIXED VERSION
 import { Routes, Route } from 'react-router-dom'; // ⬅ remove BrowserRouter from here
+import React, { useEffect } from "react";
+
 import Home from './pages/Home';
 import Enroll from './pages/Enroll';
 import StudyMaterials from './pages/studyMaterial';
