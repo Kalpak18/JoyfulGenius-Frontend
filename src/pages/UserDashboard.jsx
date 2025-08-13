@@ -1604,7 +1604,7 @@ const UserDashboard = () => {
                         <>
                           <ul className="space-y-3">
                             {filteredAutoTests.map((t, i) => (
-                              <li key={i} className="bg-gray-50 p-3 rounded shadow">
+                              <li key={t_id || i} className="bg-gray-50 p-3 rounded shadow">
                                 <p><strong>Subject:</strong> {t.subject}</p>
                                 <p><strong>Chapter:</strong> {t.chapter}</p>
                                 <p><strong>Score:</strong> {t.score} / {t.total}</p>
@@ -1659,7 +1659,7 @@ const UserDashboard = () => {
                         <>
                           <ul className="space-y-3">
                             {filteredManualTests.map((t, i) => (
-                              <li key={i} className="bg-gray-50 p-3 rounded shadow">
+                              <li key={t_id || i} className="bg-gray-50 p-3 rounded shadow">
                                 <p><strong>Subject:</strong> {t.subject}</p>
                                 <p><strong>Test:</strong> {t.chapter}</p>
                                 <p><strong>Score:</strong> {t.score} / {t.total}</p>
