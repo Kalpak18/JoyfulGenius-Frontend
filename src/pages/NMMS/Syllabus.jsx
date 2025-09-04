@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Header from "../components/Header";
-import syllabuspage from "../assets/Syllabus_page-0001.jpg";
-import syllabuspdf from "../assets/Information2324.pdf";
+import Header from "../../components/Header";
+import syllabuspage from "../../assets/Syllabus_page-0001.jpg";
+import syllabuspdf from "../../assets/Information2324.pdf";
 
 const Syllabus = () => {
 

@@ -231,7 +231,8 @@ const Home = () => {
       if (isAdmin) {
         navigate("/admin/dashboard");
       } else if (isUser) {
-        navigate("/course");
+        // navigate("/courses");
+        navigate("/NMMS/course-selection");
       }
     }
   }, [isUser, isAdmin, loading, navigate]);

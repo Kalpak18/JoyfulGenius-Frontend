@@ -1,10 +1,10 @@
-import Header from "../components/Header";
+import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 
 const SocialStudies = () => {
   const subjects = [
-    { name: "History", route: "/History" },
-    { name: "Civics", route: "/Civic" },
+    { name: "History", route: "/dynamic/history" },
+    { name: "Civics", route: "/dynamic/civics" },
   ];
 
   return (

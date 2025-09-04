@@ -1,71 +1,12 @@
-// import Header from "../components/Header";
-// import SATImage from "../assets/SAT.jpg";
-// import MATImage from "../assets/MAT.jpg";
-// import { Link } from "react-router-dom";
-// import { GraduationCap } from "lucide-react";
-
-// const Course = () => {
-//   return (
-//     <div className="flex flex-col min-h-screen bg-gradient-to-b from-yellow-50 to-white">
-//       <Header />
-
-//       <main className="flex-grow container mx-auto px-4 pt-6 pb-24">
-//         <div className="flex items-center justify-center gap-3 mb-6">
-//         <GraduationCap size={36} className="text-amber-600" />
-//         <h2 className="text-2xl sm:text-3xl font-bold text-amber-800 tracking-wide">
-//           NMMS Exam Portal
-//         </h2>
-//       </div>
-
-//         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-//           {/* SAT Book */}
-//           <div className="bg-white p-4 shadow-md text-center rounded-xl hover:shadow-lg transition">
-//             <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-800">
-//               Scholastic Aptitude Test (SAT)
-//             </h3>
-//             <Link to="/sat">
-//               <img
-//                 src={SATImage}
-//                 alt="SAT Book"
-//                 className="w-40 sm:w-44 md:w-52 mx-auto mb-3 transform hover:scale-105 transition duration-300"
-//               />
-//             </Link>
-//           </div>
-
-//           {/* MAT Book */}
-//           <div className="bg-white p-4 shadow-md text-center rounded-xl hover:shadow-lg transition">
-//             <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-800">
-//               Mental Ability Test (MAT)
-//             </h3>
-//             <Link to="/MAT">
-//               <img
-//                 src={MATImage}
-//                 alt="MAT Book"
-//                 className="w-40 sm:w-44 md:w-52 mx-auto mb-3 transform hover:scale-105 transition duration-300"
-//               />
-//             </Link>
-//           </div>
-//         </div>
-//       </main>
-
-//       <footer className="hidden md:block bg-gray-800 text-white text-center py-4">
-//         <p>&copy; 2024 NMMS Prep. All rights reserved.</p>
-//       </footer>
-//     </div>
-//   );
-// };
-
-// export default Course;
-
 
 import { useState } from "react";
-import Header from "../components/Header";
-import SATImage from "../assets/SAT.jpg";
-import MATImage from "../assets/MAT.jpg";
+import Header from "../../components/Header";
+import SATImage from "../../assets/SAT.jpg";
+import MATImage from "../../assets/MAT.jpg";
 import { Link } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
 
-const Course = () => {
+const NMMS = () => {
   const [imagesLoaded, setImagesLoaded] = useState(0);
 
   const handleImageLoad = () => {
@@ -110,7 +51,7 @@ const Course = () => {
             <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-800">
               Scholastic Aptitude Test (SAT)
             </h3>
-            <Link to="/sat">
+            <Link to="/NMMS/sat">
               <img
                 src={SATImage}
                 alt="SAT Book"
@@ -125,7 +66,7 @@ const Course = () => {
             <h3 className="text-lg sm:text-xl font-bold mb-3 text-gray-800">
               Mental Ability Test (MAT)
             </h3>
-            <Link to="/MAT">
+            <Link to="/dynamic/MAT">
               <img
                 src={MATImage}
                 alt="MAT Book"
@@ -144,4 +85,4 @@ const Course = () => {
   );
 };
 
-export default Course;
+export default NMMS;

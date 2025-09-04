@@ -1,119 +1,98 @@
-// import { useEffect, useState } from "react";
-
-// const getStoredData = () => {
-//   const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-//   const adminToken = localStorage.getItem("adminToken") || sessionStorage.getItem("adminToken");
-//   const role = localStorage.getItem("role") || sessionStorage.getItem("role");
-//   const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
-//   let user = null;
-
-//   try {
-//     if (storedUser) user = JSON.parse(storedUser);
-//   } catch (err) {
-//     console.error("🔴 Error parsing stored user:", err);
-//   }
-
-//   return { token, adminToken, role, user };
-// };
-
-// const useAuth = () => {
-//   const [auth, setAuth] = useState({
-//     token: null,
-//     adminToken: null,
-//     role: null,
-//     user: null,
-//     loading: true,
-//   });
-
-//   useEffect(() => {
-//     const data = getStoredData();
-//     setAuth({ ...data, loading: false });
-//   }, []);
-
-//   const login = ({ token, user, role = "user", adminToken = null, remember = true }) => {
-//     const storage = remember ? localStorage : sessionStorage;
-
-//     if (token) storage.setItem("token", token);
-//     if (adminToken) storage.setItem("adminToken", adminToken);
-//     if (user) storage.setItem("user", JSON.stringify(user));
-//     storage.setItem("role", role);
-
-//     setAuth({ token, adminToken, user, role, loading: false });
-//   };
-
-//   const logout = () => {
-//     localStorage.clear();
-//     sessionStorage.clear();
-//     setAuth({ token: null, adminToken: null, user: null, role: null, loading: false });
-//   };
-
-//   const isAuthenticated = !!auth.token || !!auth.adminToken;
-//   const isAdmin = auth.role === "admin";
-//   const isUser = auth.role === "user";
-
-//   return {
-//     ...auth,
-//     login,
-//     logout,
-//     isAuthenticated,
-//     isAdmin,
-//     isUser,
-//   };
-// };
-
-// export default useAuth;
 
 
-// useAuth.js
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import api, { getToken, setToken, clearStorageAndLogout } from "../utils/axios";
 
 const useAuth = () => {
-  const [isUser, setIsUser] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [user, setUser] = useState(() => {
+  try {
+    const role =
+      localStorage.getItem("role") || sessionStorage.getItem("role") || null;
+
+    if (role === "admin") {
+      const storedAdmin =
+        localStorage.getItem("admin_user") ||
+        sessionStorage.getItem("admin_user");
+      return storedAdmin ? JSON.parse(storedAdmin) : null;
+    } else {
+      const storedUser =
+        localStorage.getItem("user") || sessionStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    }
+  } catch {
+    return null;
+  }
+});
+
+
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const role = localStorage.getItem("role") || sessionStorage.getItem("role");
-    const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
-    const adminToken = localStorage.getItem("adminToken") || sessionStorage.getItem("adminToken");
-
-    if (role === "admin" && !adminToken) {
-      setIsAdmin(false);
-    } else {
-      setIsAdmin(role === "admin");
-    }
-
-    setIsUser(role === "user");
-
-    if (storedUser && role === "user") {
-      try {
-        const user = JSON.parse(storedUser);
-        setUserName(user.name || "");
-      } catch (err) {
-        console.error("Error parsing stored user:", err);
-      }
-    }
-
-    setLoading(false);
+  // 🔑 Read role safely
+  const getRole = useCallback(() => {
+    return (
+      localStorage.getItem("role") ||
+      sessionStorage.getItem("role") ||
+      null
+    );
   }, []);
 
-  const logout = () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    setIsUser(false);
-    setIsAdmin(false);
-    setUserName("");
-  };
+  const isAdmin = user && getRole() === "admin";
+  const isUser = user && getRole() === "user";
+  const userName = user?.name || user?.email || "";
+
+
+  // 🔒 Logout helper
+  const logout = useCallback(() => {
+    clearStorageAndLogout();
+    setUser(null);
+  }, []);
+
+  // ✅ On mount: always try to refresh using cookie
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const role = getRole() || "user"; // default to user
+        const endpoint = role === "admin" ? "/admin/refresh" : "/users/auth/refresh";
+
+        const res = await api.post(endpoint, {}, { withCredentials: true });
+
+          const { accessToken, user: refreshedUser, role: roleFromAPI } = res.data;
+        if (accessToken && refreshedUser) {
+          const rememberMe = localStorage.getItem("rememberMe") === "true";
+          const roleToPersist = roleFromAPI || role;
+          setToken(accessToken, rememberMe, refreshedUser, roleToPersist);
+          setUser(prevUser =>
+            JSON.stringify(prevUser) !== JSON.stringify(refreshedUser)
+              ? refreshedUser
+              : prevUser
+          );
+        } else {
+          logout();
+        }
+      } catch (err) {
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // ⚡ Only refresh if we already have a token OR cookie exists
+    if (getToken()) {
+      initializeAuth();
+    } else {
+      setLoading(false);
+    }
+  }, [getRole, logout]);
 
   return {
-    isUser,
+    user,
     isAdmin,
+    isUser,
     userName,
     loading,
     logout,
+    setUser,
   };
 };
 
 export default useAuth;
-

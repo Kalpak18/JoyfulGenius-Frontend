@@ -1,11 +1,11 @@
-import Header from "../components/Header";
+import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 
 const Science = () => {
   const subjects = [
-    { name: "Physics", route: "/physics" },
-    { name: "Chemistry", route: "/chemistry" },
-    { name: "Biology", route: "/biology" },
+    { name: "Physics", route: "/dynamic/physics" },
+    { name: "Chemistry", route: "/dynamic/chemistry" },
+    { name: "Biology", route: "/dynamic/biology" },
   ];
 
   return (

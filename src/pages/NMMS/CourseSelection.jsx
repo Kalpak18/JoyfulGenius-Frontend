@@ -1,5 +1,5 @@
 import { useState } from "react";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 import { ArrowLeftRight, Check, ArrowRight, Zap, Award, Clock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -63,7 +63,7 @@ const CourseSelection = () => {
   const t = content[language];
 
   const handleBuyNow = () => {
-    navigate('/payment');
+    navigate('/NMMS/payment');
   };
 
  return (
@@ -138,7 +138,7 @@ const CourseSelection = () => {
                 whileTap={{ scale: 0.97 }}
               >
                 <Link
-                  to="/course"
+                  to="/NMMS/NMMS"
                   className="w-full max-w-xs mx-auto flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-medium px-4 py-2.5 max-md:px-3 max-md:py-2 rounded-lg shadow-md transition-all text-sm"
                 >
                   {t.goToCourse}

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Header from "../components/Header";
-import qrCode from "../assets/Payment_Only_QR.jpg";
+import Header from "../../components/Header";
+import qrCode from "../../assets/Payment_Only_QR.jpg";
 import { ArrowLeftRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -49,7 +49,7 @@ const PaymentPage = () => {
       <Header />
       <div className="relative bg-white shadow-sm">
         <div className="container mx-auto flex justify-between items-center px-4 py-3">
-          <Link to="/course-selection" className="flex items-center">
+          <Link to="/NMMS/course-selection" className="flex items-center">
             <ArrowLeft size={20} className="text-gray-600 mr-1" />
             <span className="text-sm font-medium text-gray-700">{t.goBack}</span>
           </Link>
@@ -151,7 +151,7 @@ const PaymentPage = () => {
 
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link
-                  to="/course"
+                  to="/NMMS/NMMS"
                   className="block text-center bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium px-6 py-2.5 rounded-xl shadow transition-all relative overflow-hidden group"
                 >
                   <span className="relative z-10 flex items-center justify-center gap-1">
